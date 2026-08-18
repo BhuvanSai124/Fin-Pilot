@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  finpilot:
+    build: .
+    container_name: finpilot_app
+    ports:
+      - "8000:8000"
+    environment:
+      - SECRET_KEY=finpilot_jwt_secure_secret_signing_key_312
+    volumes:
+      - ./finpilot.db:/app/finpilot.db
+    restart: always

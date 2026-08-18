@@ -1,0 +1,1341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FinPilot AI — Your Personal AI Wealth Mentor</title>
+  <meta name="description" content="Learn, plan, invest, and grow with FinPilot AI. Your interactive, multi-agent financial companion that bridges understanding and wealth management.">
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- In-Browser React & Babel Compilation CDNs -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+
+  <!-- Root mount point for React -->
+  <div id="root" style="width: 100%;"></div>
+
+  <!-- React Frontend Script with JSX -->
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    // Roadmap lessons data mirroring
+    const ACADEMY_LESSONS = {
+      beginner: [
+        {
+          id: 'l1',
+          phase: '1. Stock Market Foundation',
+          title: 'What is a stock?',
+          desc: 'Understand what shares are and how companies divide ownership.',
+          content: `<h3>Lesson: What is a stock?</h3>
+          <p>A <strong>stock</strong> (or share) represents fractional ownership of a corporation. When you buy a stock of a company like Apple or Reliance, you become a co-owner of that business.</p>
+          <p><strong>How companies generate value:</strong> Companies sell products and earn profits. As profits grow, the company becomes more valuable, and the price of your shares increases.</p>
+          <p><strong>NSE vs BSE:</strong> National Stock Exchange (NSE) and Bombay Stock Exchange (BSE) are India's primary stock exchanges, facilitating trade. NSE's benchmark index is <em>Nifty 50</em>; BSE's is <em>Sensex</em>.</p>`,
+          explained15: `Imagine a large pizza cut into 100 slices. If you buy 1 slice, you own 1% of the pizza. If the pizza becomes more delicious (the company earns more), people are willing to pay more for your slice!`,
+          example: `If you bought shares in a local bakery for ₹1,000 to help them buy an oven, and the bakery expands to 3 shops, your ownership stake might now be worth ₹5,000.`,
+          compare: `A stock is owning a single business (high risk, high return). Mutual funds are like a basket containing small pieces of 50 different businesses (lower risk, diversified).`
+        },
+        {
+          id: 'l2',
+          phase: '1. Stock Market Foundation',
+          title: 'Market Capitalization & Prices',
+          desc: 'Understand market cap groups and what makes stock prices tick.',
+          content: `<h3>Lesson: Market Capitalization</h3>
+          <p><strong>Market Cap:</strong> The total value of a company's outstanding shares. It is calculated as: <code>Market Cap = Share Price × Total Number of Shares</code>.</p>
+          <p><strong>Classifications:</strong>
+          <ul>
+            <li><strong>Large-Cap:</strong> Stable industry giants (e.g., Apple, TCS). Lower volatility, slower growth.</li>
+            <li><strong>Mid-Cap:</strong> Mid-sized firms with high expansion potential. Moderate risk.</li>
+            <li><strong>Small-Cap:</strong> Startups/young firms. High growth potential, but high failure rates.</li>
+          </ul>
+          <p><strong>Price Movement:</strong> Driven strictly by supply and demand. If news is good, buyers bid prices higher. If bad, sellers push prices down.</p>`,
+          explained15: `Market Cap is the total price tag of a whole company. Price movement is like bidding at an auction: if a lot of people want the same toy, the seller raises the price.`,
+          example: `Reliance Industries has a market cap of over ₹18 Lakh Crores. This makes it a massive large-cap stock, highly resilient to sudden collapse.`,
+          compare: `Large cap stocks are like cruise ships (stable, slow-moving). Small cap stocks are like speedboats (fast, nimble, but easily capsizable in stormy markets).`
+        },
+        {
+          id: 'l3',
+          phase: '2. Investment Products',
+          title: 'Mutual Funds & Index Funds',
+          desc: 'Discover pooled investments and passive tracking index funds.',
+          content: `<h3>Lesson: Mutual Funds & Index Funds</h3>
+          <p><strong>Mutual Funds:</strong> A pool of money collected from many investors. A professional Fund Manager invests this money in stocks, bonds, or other assets.</p>
+          <p><strong>Index Funds:</strong> A special type of mutual fund that automatically tracks a market index (like Nifty 50 or S&P 500). There is no active stock-picker, making expense fees extremely low.</p>
+          <p><strong>Expense Ratio:</strong> The annual fee charged by the fund to manage your money. Index funds usually charge 0.1% to 0.3%, whereas active funds charge 1% to 2%.</p>`,
+          explained15: `Instead of choosing which candies to buy, you put your money together with friends to buy a pre-made bag of assorted candies. That's a mutual fund!`,
+          example: `Investing in a Nifty 50 Index Fund means your money is automatically spread across India's top 50 companies (HDFC, Reliance, Infosys, etc.) in exact proportion.`,
+          compare: `Active mutual funds try to outperform the market (using analysts; high fees). Index funds simply copy the market (passive; ultra-low fees). Over 80% of active funds fail to beat index funds over 10 years.`
+        },
+        {
+          id: 'l4',
+          phase: '3. Smart Investing',
+          title: 'Compounding & Inflation',
+          desc: 'Learn about the power of compound interest and the silent tax of inflation.',
+          content: `<h3>Lesson: Compounding & Inflation</h3>
+          <p><strong>Compounding:</strong> Earning interest on top of interest. Over time, your returns generate their own returns, creating exponential growth.</p>
+          <p><strong>Inflation:</strong> The rate at which general prices rise, reducing your purchasing power. If inflation is 6%, your savings must earn more than 6% to avoid losing real value.</p>
+          <p><strong>Rule of 72:</strong> Quick way to estimate doubling time: <code>72 / Interest Rate = Years to double</code>.</p>`,
+          explained15: `Compounding is like a snowball rolling down a hill: it picks up more snow faster and faster. Inflation is a warm breeze melting your snowball slowly.`,
+          example: `Investing ₹5,000 monthly for 20 years at 12% grows to ₹49.9 Lakhs. The amount you put in was ₹12 Lakhs; compounding generated the remaining ₹37.9 Lakhs!`,
+          compare: `SIP (Systematic Investment Plan) invests small amounts regularly (averages purchase price). Lumpsum is a one-time investment (great if the market is low, but higher timing risk).`
+        }
+      ],
+      basics: [
+        {
+          id: 'l5',
+          phase: '1. Advanced Products',
+          title: 'ETFs & Bonds',
+          desc: 'Learn about Exchange Traded Funds and government/corporate debt bonds.',
+          content: `<h3>Lesson: ETFs & Bonds</h3>
+          <p><strong>ETFs (Exchange Traded Funds):</strong> Similar to mutual funds, but they trade directly on stock exchanges like individual stocks. You can buy/sell them in real time during trading hours.</p>
+          <p><strong>Bonds:</strong> You lend money to a government or company in exchange for regular interest payments (coupons) and the return of principal at maturity. They act as safe debt reserves.</p>`,
+          explained15: `A bond is a formal I.O.U. from a company or government. They pay you interest as thanks for the loan, and then pay back the full loan when the timer ends.`,
+          example: `RBI Treasury Bonds pay a guaranteed annual yield of ~7% and are backed by the Indian Government, making them virtually risk-free.`,
+          compare: `Bonds provide fixed, guaranteed income (safe). ETFs trade on exchanges and typically track stock/gold indices (variable prices, higher potential growth).`
+        },
+        {
+          id: 'l6',
+          phase: '2. Asset Allocation',
+          title: 'Diversification & Rebalancing',
+          desc: 'Explore the only free lunch in finance: Portfolio Diversification.',
+          content: `<h3>Lesson: Diversification & Rebalancing</h3>
+          <p><strong>Diversification:</strong> Spreading investments across different asset classes (Equity, Debt, Gold, Cash) and sectors to manage risk. If one asset class drops, others may rise.</p>
+          <p><strong>Rebalancing:</strong> Periodically selling assets that have grown and buying assets that have fallen to return your portfolio to its target allocation (e.g. 50/50 equity-debt).</p>`,
+          explained15: `Don't put all your eggs in one basket. If the basket drops, all eggs break. Put some eggs in a metal container, some in wood, and some in a basket.`,
+          example: `If tech stocks dip due to a global chip shortage, your tech holdings fall, but your gold assets rise due to safety-seeking investors, buffering the overall loss.`,
+          compare: `SIP averages out market entry prices over time. Rebalancing adjusts your asset mixture weights (e.g., selling overvalued equity to buy undervalued debt).`
+        }
+      ],
+      intermediate: [
+        {
+          id: 'l7',
+          phase: '1. Portfolio Optimization',
+          title: 'Risk-Adjusted Returns & Sharpe Ratio',
+          desc: 'Understand portfolio metrics, volatility, and how to measure true performance.',
+          content: `<h3>Lesson: Risk-Adjusted Returns</h3>
+          <p><strong>Standard Deviation:</strong> Measures the volatility of a fund's returns. Higher volatility means wider price swings.</p>
+          <p><strong>Sharpe Ratio:</strong> Measures excess return per unit of deviation risk. Calculated as: <code>(Portfolio Return - Risk-free Rate) / Volatility</code>. A ratio above 1 is considered good.</p>
+          <p><strong>Beta:</strong> Measures stock volatility compared to the market. Beta > 1 is more volatile than market; Beta < 1 is more stable.</p>`,
+          explained15: `If two players score the same average points, but player A is highly erratic and player B is extremely consistent, player B has a better risk-adjusted score.`,
+          example: `Mutual Fund X yields 15% with a volatility of 10%. Fund Y yields 16% with a volatility of 18%. Fund X has a higher Sharpe ratio and is a more efficient risk choice.`,
+          compare: `Nominal return is simple absolute growth. Risk-adjusted return measures if that growth was worth the stomach-churning price swings.`
+        }
+      ]
+    };
+
+    const API_URL = "http://localhost:8000";
+
+    function App() {
+      const [token, setToken] = useState(localStorage.getItem('finpilot_token') || '');
+      const [user, setUser] = useState(null);
+      const [view, setView] = useState('home');
+      const [financialIQ, setFinancialIQ] = useState(340);
+      const [completedLessons, setCompletedLessons] = useState([]);
+      
+      // Auth inputs
+      const [authMode, setAuthMode] = useState('signin');
+      const [authEmail, setAuthEmail] = useState('');
+      const [authPassword, setAuthPassword] = useState('');
+      const [authName, setAuthName] = useState('');
+      const [authConfirm, setAuthConfirm] = useState('');
+      const [authError, setAuthError] = useState('');
+      const [showAuthModal, setShowAuthModal] = useState(false);
+
+      // Academy Setup
+      const [knowledgeLevel, setKnowledgeLevel] = useState(null);
+      const [activeLesson, setActiveLesson] = useState(null);
+      const [chatHistory, setChatHistory] = useState([
+        { sender: 'assistant', text: 'Welcome! Click any active roadmap module on the left to read its lesson details, or ask me questions about investing. You can also use the helper prompts below for quick comparisons.' }
+      ]);
+      const [chatInput, setChatInput] = useState('');
+
+      // Advisor Form States
+      const [advAge, setAdvAge] = useState(28);
+      const [advGoal, setAdvGoal] = useState('retirement');
+      const [advIncome, setAdvIncome] = useState(75000);
+      const [advExpenses, setAdvExpenses] = useState(35000);
+      const [advCapacity, setAdvCapacity] = useState(15000);
+      const [advSavings, setAdvSavings] = useState(150000);
+      const [advDuration, setAdvDuration] = useState(10);
+      const [advRisk, setAdvRisk] = useState('moderate');
+
+      // Advisor workflow views
+      const [advisorScreen, setAdvisorScreen] = useState('form'); // form, terminal, recommendation, portfolio
+      const [agentLogs, setAgentLogs] = useState([]);
+      const [activeAgents, setActiveAgents] = useState({ market: 'queued', fund: 'queued', risk: 'queued', builder: 'queued' });
+      const [portfolioHoldings, setPortfolioHoldings] = useState([]);
+      const [portfolioTotal, setPortfolioTotal] = useState(0);
+      const [portfolioVariance, setPortfolioVariance] = useState('+₹0.00 (0.0%)');
+      const [portfolioVarianceClass, setPortfolioVarianceClass] = useState('gain');
+      const [explainTab, setExplainTab] = useState('why');
+      const [guardianAlerts, setGuardianAlerts] = useState([]);
+
+      // Simulator States
+      const [simMode, setSimMode] = useState('sip');
+      const [simAmount, setSimAmount] = useState(5000);
+      const [simRate, setSimRate] = useState(12);
+      const [simYears, setSimYears] = useState(15);
+      const [simInflation, setSimInflation] = useState(6);
+      const [goalTarget, setGoalTarget] = useState(5000000);
+      const [solvedResult, setSolvedResult] = useState('');
+
+      const canvasRef = useRef(null);
+
+      // Effect: Fetch Profile when token is set
+      useEffect(() => {
+        if (token) {
+          fetchUserProfile();
+        }
+      }, [token]);
+
+      // Effect: Draw Simulator Graph on Canvas
+      useEffect(() => {
+        if (view === 'simulator') {
+          drawSimulationChart();
+        }
+      }, [view, simMode, simAmount, simRate, simYears, simInflation]);
+
+      const fetchUserProfile = async () => {
+        try {
+          const res = await fetch(`${API_URL}/api/user/profile`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          if (res.status === 401) {
+            handleLogout();
+            return;
+          }
+          const data = await res.json();
+          setUser(data);
+          setFinancialIQ(data.financial_iq);
+          setCompletedLessons(data.completed_lessons);
+          
+          if (data.goals) {
+            setAdvGoal(data.goals.goal_type);
+            setAdvRisk(data.goals.risk_appetite);
+            setAdvDuration(data.goals.duration_years);
+            setAdvCapacity(data.goals.monthly_capacity);
+            setAdvSavings(data.goals.savings_amount);
+            
+            // If they have loaded goals, pull active holdings
+            setPortfolioTotal(data.goals.savings_amount + data.goals.monthly_capacity);
+            fetchPortfolioHoldings();
+          }
+        } catch (err) {
+          console.error("Profile fetch error:", err);
+        }
+      };
+
+      const fetchPortfolioHoldings = async () => {
+        // Build mock visual models if holdings is empty, or compute from DB
+        let initialCapital = advSavings + advCapacity;
+        let allocations = [];
+        if (advRisk === 'conservative') {
+          allocations = [
+            { asset_class: 'Debt Mutual Funds', weight: 70, current_value: initialCapital * 0.7 },
+            { asset_class: 'Index Funds (Equity)', weight: 20, current_value: initialCapital * 0.2 },
+            { asset_class: 'Sovereign Gold Bonds', weight: 10, current_value: initialCapital * 0.1 }
+          ];
+        } else if (advRisk === 'moderate') {
+          allocations = [
+            { asset_class: 'Equity Index Funds', weight: 50, current_value: initialCapital * 0.5 },
+            { asset_class: 'Large Cap Stocks', weight: 30, current_value: initialCapital * 0.3 },
+            { asset_class: 'Gold / Commodities', weight: 10, current_value: initialCapital * 0.1 },
+            { asset_class: 'Liquid Cash / Debt Reserve', weight: 10, current_value: initialCapital * 0.1 }
+          ];
+        } else {
+          allocations = [
+            { asset_class: 'Large & Mid-Cap Equity Funds', weight: 70, current_value: initialCapital * 0.7 },
+            { asset_class: 'Direct Growth Stocks', weight: 20, current_value: initialCapital * 0.2 },
+            { asset_class: 'Alternative Assets / Smallcap', weight: 10, current_value: initialCapital * 0.1 }
+          ];
+        }
+        setPortfolioHoldings(allocations);
+        setAdvisorScreen('portfolio');
+        
+        // Fetch guardian notifications from FastAPI
+        fetchGuardianAlerts();
+      };
+
+      const fetchGuardianAlerts = async () => {
+        if (!token) {
+          setGuardianAlerts([
+            { id: 1, type: 'info', title: 'Macro Economic Momentum Stable', desc: 'RBI holds repo rate at 6.5%. Inflation trajectory remains within expected 4-5% band.' }
+          ]);
+          return;
+        }
+
+        try {
+          const res = await fetch(`${API_URL}/api/market/news`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          const alerts = await res.json();
+          if (Array.isArray(alerts)) {
+            setGuardianAlerts(alerts);
+          } else {
+            setGuardianAlerts([
+              { id: 1, type: 'info', title: 'Macro Economic Momentum Stable', desc: 'RBI holds repo rate at 6.5%. Inflation trajectory remains within expected 4-5% band.' }
+            ]);
+          }
+        } catch (err) {
+          console.error(err);
+          setGuardianAlerts([
+            { id: 1, type: 'info', title: 'Macro Economic Momentum Stable', desc: 'RBI holds repo rate at 6.5%. Inflation trajectory remains within expected 4-5% band.' }
+          ]);
+        }
+      };
+
+      const handleSignupSubmit = async (e) => {
+        e.preventDefault();
+        setAuthError('');
+        if (authPassword !== authConfirm) {
+          setAuthError('Passwords do not match.');
+          return;
+        }
+        try {
+          const res = await fetch(`${API_URL}/api/auth/signup`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: authName, email: authEmail, password: authPassword })
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.detail || 'Signup failed.');
+          
+          localStorage.setItem('finpilot_token', data.access_token);
+          setToken(data.access_token);
+          setShowAuthModal(false);
+        } catch (err) {
+          setAuthError(err.message);
+        }
+      };
+
+      const handleSigninSubmit = async (e) => {
+        e.preventDefault();
+        setAuthError('');
+        try {
+          const res = await fetch(`${API_URL}/api/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: authEmail, password: authPassword })
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.detail || 'Login failed.');
+          
+          localStorage.setItem('finpilot_token', data.access_token);
+          setToken(data.access_token);
+          setShowAuthModal(false);
+        } catch (err) {
+          setAuthError(err.message);
+        }
+      };
+
+      const handleLogout = () => {
+        localStorage.removeItem('finpilot_token');
+        setToken('');
+        setUser(null);
+        setCompletedLessons([]);
+        setView('home');
+        setAdvisorScreen('form');
+        setKnowledgeLevel(null);
+        setActiveLesson(null);
+      };
+
+      // --- ACADEMY LOGIC ---
+      const handleSelectKnowledge = (level) => {
+        setKnowledgeLevel(level);
+        const lessons = ACADEMY_LESSONS[level] || ACADEMY_LESSONS.beginner;
+        if (lessons && lessons.length > 0) {
+          handleRoadmapLessonSelect(lessons[0]);
+        }
+      };
+
+      const handleRoadmapLessonSelect = (lesson) => {
+        setActiveLesson(lesson);
+        setChatHistory(prev => [
+          ...prev,
+          { sender: 'user', text: `Please teach me: "${lesson.title}"` },
+          { sender: 'assistant', text: `<h4>Lesson Module: ${lesson.title}</h4> ${lesson.content}` }
+        ]);
+      };
+
+      const handleMarkLessonComplete = async (lessonId) => {
+        if (completedLessons.includes(lessonId)) return;
+
+        if (!token) {
+          setFinancialIQ(prev => Math.min(1000, prev + 50));
+          setCompletedLessons(prev => [...prev, lessonId]);
+          setChatHistory(prev => [
+            ...prev,
+            { sender: 'assistant', text: `<p style="color:var(--accent-green); font-weight:600;">✓ Topic completed locally in Guest Mode! +50 Financial IQ added. Sign up to save progress permanently.</p>` }
+          ]);
+          return;
+        }
+
+        try {
+          const res = await fetch(`${API_URL}/api/user/lesson`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ lesson_id: lessonId })
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.detail || 'Failed to update lesson.');
+          setFinancialIQ(data.financial_iq);
+          setCompletedLessons(prev => [...prev, lessonId]);
+          
+          setChatHistory(prev => [
+            ...prev,
+            { sender: 'assistant', text: `<p style="color:var(--accent-green); font-weight:600;">✓ Topic completed successfully! +50 Financial IQ added to your score.</p>` }
+          ]);
+        } catch (err) {
+          console.error(err);
+          setFinancialIQ(prev => Math.min(1000, prev + 50));
+          setCompletedLessons(prev => [...prev, lessonId]);
+        }
+      };
+
+      const sendChatCustomQuery = () => {
+        if (!chatInput.trim()) return;
+        const query = chatInput.trim();
+        setChatHistory(prev => [...prev, { sender: 'user', text: query }]);
+        setChatInput('');
+
+        setTimeout(() => {
+          let response = `<p>That is an excellent question! here is the insight:</p>`;
+          const q = query.toLowerCase();
+          if (q.includes('sip')) {
+            response += `<p>Systematic Investment Plans (SIP) enforce cost-averaging. Instead of worrying about whether indices are at market highs, consistent compounding over 10+ years reduces downside spikes.</p>`;
+          } else if (q.includes('risk') || q.includes('loss')) {
+            response += `<p>Managing risk is all about asset correlation. Spreading savings across equity mutual funds, debt reserves, and gold safeguards against single-sector crashes.</p>`;
+          } else if (q.includes('inflation')) {
+            response += `<p>Inflation averages 6% yearly, quietly reducing cash value. To combat this, index equity is crucial for capital gains, while bonds lock in yield stability.</p>`;
+          } else {
+            response += `<p>A customized asset allocation matching your timeline is the best wealth strategy. Let me know if you want to run simulations on rate percentages!</p>`;
+          }
+          setChatHistory(prev => [...prev, { sender: 'assistant', text: response }]);
+        }, 500);
+      };
+
+      const sendChatPreset = (preset) => {
+        if (!activeLesson) {
+          setChatHistory(prev => [...prev, { sender: 'assistant', text: 'Please click on a roadmap lesson node on the left to start teaching context first!' }]);
+          return;
+        }
+        setChatHistory(prev => [...prev, { sender: 'user', text: preset }]);
+        
+        let answer = '';
+        if (preset.includes('15 years old')) {
+          answer = `<p><strong>ELI15:</strong> ${activeLesson.explained15}</p>`;
+        } else if (preset.includes('real-world')) {
+          answer = `<p><strong>Example:</strong> ${activeLesson.example}</p>`;
+        } else {
+          answer = `<p><strong>Comparison:</strong> ${activeLesson.compare}</p>`;
+        }
+
+        setTimeout(() => {
+          setChatHistory(prev => [...prev, { sender: 'assistant', text: answer }]);
+        }, 400);
+      };
+
+      // --- ADVISOR LOGIC ---
+      const handleRunAdvisorAgents = () => {
+        setAdvisorScreen('terminal');
+        setAgentLogs([]);
+        setActiveAgents({ market: 'queued', fund: 'queued', risk: 'queued', builder: 'queued' });
+
+        const logLines = [
+          { time: '21:30:01', tag: 'SYSTEM', text: 'Initializing profile validation checks...', style: 'info' },
+          { time: '21:30:02', tag: 'SYSTEM', text: `Goal parameters compiled: ${advGoal.toUpperCase()} | Horizon: ${advDuration} Yrs.`, style: 'info' },
+          { time: '21:30:03', tag: 'MARKET ANALYST', text: 'Scraping NSE/BSE valuation metrics and PE sector averages...', style: 'info', agent: 'market', status: 'running' },
+          { time: '21:30:05', tag: 'MARKET ANALYST', text: 'Nifty indices sitting at 22.4 PE. Strong structural momentum in Banking & Infrastructure.', style: 'success', agent: 'market', status: 'completed' },
+          { time: '21:30:06', tag: 'MUTUAL FUND AGENT', text: 'Filtering active funds with low tracking error (< 0.2%) and AUM > 5000Cr...', style: 'info', agent: 'fund', status: 'running' },
+          { time: '21:30:08', tag: 'MUTUAL FUND AGENT', text: 'Selected Large-cap Index trackers and short-term corporate debt baskets.', style: 'success', agent: 'fund', status: 'completed' },
+          { time: '21:30:09', tag: 'RISK AGENT', text: 'Running stochastic volatility projections over the 10-year term...', style: 'info', agent: 'risk', status: 'running' },
+          { time: '21:30:11', tag: 'RISK AGENT', text: 'Tail-risk drawdown modeled at 18.5%. Confirming liquid reserve buffer size.', style: 'warn', agent: 'risk', status: 'completed' },
+          { time: '21:30:12', tag: 'PORTFOLIO BUILDER', text: 'Optimizing asset mix allocation weights to maximize Sharpe index...', style: 'info', agent: 'builder', status: 'running' },
+          { time: '21:30:13', tag: 'PORTFOLIO BUILDER', text: 'Asset allocations successfully solved and structured. Loading report...', style: 'success', agent: 'builder', status: 'completed' }
+        ];
+
+        let index = 0;
+        const interval = setInterval(() => {
+          if (index < logLines.length) {
+            const line = logLines[index];
+            setAgentLogs(prev => [...prev, line]);
+            
+            if (line.agent) {
+              setActiveAgents(prev => ({ ...prev, [line.agent]: line.status }));
+            }
+            index++;
+          } else {
+            clearInterval(interval);
+            setTimeout(() => {
+              saveGoalToDB();
+            }, 600);
+          }
+        }, 400);
+      };
+
+      const saveGoalToDB = async () => {
+        const portVal = parseFloat(advSavings) + parseFloat(advCapacity);
+        setPortfolioTotal(portVal);
+
+        if (!token) {
+          setAdvisorScreen('recommendation');
+          showToastAlert('Strategy generated in Guest Mode! Sign in to save your wealth goals permanently.');
+          return;
+        }
+
+        try {
+          const res = await fetch(`${API_URL}/api/user/goal`, {
+            method: 'POST',
+            headers: { 
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+              goal_type: advGoal,
+              target_amount: parseFloat(advGoal === 'house' ? 5000000 : 10000000),
+              duration_years: parseInt(advDuration),
+              monthly_capacity: parseFloat(advCapacity),
+              savings_amount: parseFloat(advSavings),
+              risk_appetite: advRisk
+            })
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.detail || 'Failed to save goal.');
+          setPortfolioTotal(data.savings_amount + data.monthly_capacity);
+          setAdvisorScreen('recommendation');
+        } catch (err) {
+          console.error(err);
+          setAdvisorScreen('recommendation');
+        }
+      };
+
+      const handleConfirmPortfolio = () => {
+        fetchPortfolioHoldings();
+        showToastAlert('Portfolio monitoring activated successfully!');
+      };
+
+      const handleSimulateMarketShift = () => {
+        setGuardianAlerts(prev => [
+          {
+            id: 2,
+            type: 'warning',
+            title: 'IT Sector Heavy Drag Detected',
+            desc: 'Tech stocks index drops 6.2% on global correction. Rebalancing recommended.'
+          },
+          ...prev
+        ]);
+        
+        // Show simulated loss
+        const lossVal = (advSavings + advCapacity) * 0.965;
+        setPortfolioTotal(lossVal);
+        setPortfolioVariance(`-₹${Math.round((advSavings + advCapacity) - lossVal).toLocaleString()} (-3.5%)`);
+        setPortfolioVarianceClass('text-red');
+      };
+
+      const handleRebalanceClick = async () => {
+        if (!token) {
+          setGuardianAlerts(prev => prev.filter(a => a.type !== 'warning'));
+          showToastAlert('AI Portfolio guardian reallocated holdings locally in Guest Mode.');
+          return;
+        }
+
+        try {
+          const res = await fetch(`${API_URL}/api/portfolio/rebalance`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ current_value: portfolioTotal, risk_appetite: advRisk })
+          });
+          const data = await res.json();
+          setPortfolioTotal(data.total_value);
+          setPortfolioHoldings(data.holdings);
+          setPortfolioVariance(`+₹${Math.round(data.total_value - (advSavings + advCapacity)).toLocaleString()} (+1.2%)`);
+          setPortfolioVarianceClass('gain');
+          
+          // Clear warning alerts
+          setGuardianAlerts(prev => prev.filter(a => a.type !== 'warning'));
+          showToastAlert('AI Portfolio guardian reallocated tech holdings successfully.');
+        } catch (err) {
+          console.error(err);
+        }
+      };
+
+      const showToastAlert = (msg) => {
+        const toast = document.createElement('div');
+        toast.className = 'toast-msg';
+        toast.innerHTML = `
+          <span style="font-size:1.25rem;">🔔</span>
+          <div>
+            <h5 style="font-size:0.85rem; margin-bottom:2px;">Guardian Alert</h5>
+            <p style="font-size:0.75rem; color:var(--text-secondary);">${msg}</p>
+          </div>
+        `;
+        document.body.appendChild(toast);
+        setTimeout(() => { toast.remove(); }, 3500);
+      };
+
+      // --- SIMULATOR MATHS ---
+      const handleSolveSIPGoal = () => {
+        const target = parseFloat(goalTarget);
+        const rate = parseFloat(simRate) / 100;
+        const years = parseInt(simYears);
+        
+        const months = years * 12;
+        const monthlyRate = rate / 12;
+
+        const solvedSIP = target * monthlyRate / ((Math.pow(1 + monthlyRate, months) - 1) * (1 + monthlyRate));
+        setSolvedResult(`₹${Math.round(solvedSIP).toLocaleString()} / month`);
+        setSimAmount(Math.round(solvedSIP));
+        showToastAlert('SIP calculator updated to target solving thresholds.');
+      };
+
+      const drawSimulationChart = () => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const w = canvas.width;
+        const h = canvas.height;
+
+        ctx.clearRect(0, 0, w, h);
+
+        const padLeft = 60;
+        const padRight = 20;
+        const padTop = 30;
+        const padBottom = 40;
+
+        const chartW = w - padLeft - padRight;
+        const chartH = h - padTop - padBottom;
+
+        // Compile points
+        const rate = simRate / 100;
+        const inflation = simInflation / 100;
+        
+        let maxVal = 0;
+        const nominalPoints = [];
+        const investedPoints = [];
+        const realPoints = [];
+
+        for (let y = 0; y <= simYears; y++) {
+          let nominal = 0;
+          let invested = 0;
+
+          if (simMode === 'sip') {
+            const months = y * 12;
+            const monthlyRate = rate / 12;
+            invested = simAmount * months;
+            nominal = y === 0 ? 0 : simAmount * ((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate) * (1 + monthlyRate);
+          } else {
+            invested = simAmount;
+            nominal = simAmount * Math.pow(1 + rate, y);
+          }
+
+          const real = nominal / Math.pow(1 + inflation, y);
+
+          nominalPoints.push(nominal);
+          investedPoints.push(invested);
+          realPoints.push(real);
+
+          if (nominal > maxVal) maxVal = nominal;
+        }
+
+        if (maxVal === 0) maxVal = 100000;
+
+        // Draw grid
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+        ctx.fillStyle = '#64748b';
+        ctx.font = '9px monospace';
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'middle';
+
+        const gridCount = 4;
+        for (let i = 0; i <= gridCount; i++) {
+          const val = (maxVal / gridCount) * i;
+          const yPos = padTop + chartH - (i / gridCount) * chartH;
+          
+          ctx.beginPath();
+          ctx.moveTo(padLeft, yPos);
+          ctx.lineTo(padLeft + chartW, yPos);
+          ctx.stroke();
+
+          let label = '';
+          if (val >= 10000000) label = `₹${(val / 10000000).toFixed(1)}Cr`;
+          else if (val >= 100000) label = `₹${(val / 100000).toFixed(0)}L`;
+          else label = `₹${(val / 1000).toFixed(0)}k`;
+          ctx.fillText(label, padLeft - 10, yPos);
+        }
+
+        // Plot lines helper
+        const drawLine = (data, color) => {
+          ctx.beginPath();
+          data.forEach((val, y) => {
+            const x = padLeft + (y / simYears) * chartW;
+            const yPos = padTop + chartH - (val / maxVal) * chartH;
+            if (y === 0) ctx.moveTo(x, yPos);
+            else ctx.lineTo(x, yPos);
+          });
+          ctx.strokeStyle = color;
+          ctx.lineWidth = 2.5;
+          ctx.stroke();
+        };
+
+        drawLine(investedPoints, '#64748b');
+        drawLine(realPoints, '#6366f1');
+        drawLine(nominalPoints, '#10b981');
+      };
+
+      const getActiveAllocationBreakdown = () => {
+        if (advRisk === 'conservative') {
+          return [
+            { name: 'Debt Mutual Funds', weight: 70, color: '#6366f1' },
+            { name: 'Index Funds (Equity)', weight: 20, color: '#10b981' },
+            { name: 'Sovereign Gold Bonds', weight: 10, color: '#f59e0b' }
+          ];
+        } else if (advRisk === 'moderate') {
+          return [
+            { name: 'Equity Index Funds', weight: 50, color: '#10b981' },
+            { name: 'Large Cap Stocks', weight: 30, color: '#f59e0b' },
+            { name: 'Gold / Commodities', weight: 10, color: '#6366f1' },
+            { name: 'Liquid Cash / Debt Reserve', weight: 10, color: '#ef4444' }
+          ];
+        } else {
+          return [
+            { name: 'Large & Mid-Cap Equity Funds', weight: 70, color: '#10b981' },
+            { name: 'Direct Growth Stocks', weight: 20, color: '#f59e0b' },
+            { name: 'Alternative Assets / Smallcap', weight: 10, color: '#6366f1' }
+          ];
+        }
+      };
+
+      // --- JSX RENDERING PANELS ---
+
+      // App Container
+      return (
+        <div className="app-container">
+          <aside className="sidebar">
+            <div className="logo-container">
+              <div className="logo-icon">Φ</div>
+              <div>
+                <h1 className="logo-text">FinPilot AI</h1>
+                <div className="logo-subtitle">AI Wealth Mentor</div>
+              </div>
+            </div>
+
+            {user && (
+              <div className="sidebar-greeting">
+                <div className="greeting-avatar">{user.name.charAt(0).toUpperCase()}</div>
+                <div>
+                  <div className="greeting-text">Hello, {user.name.split(' ')[0]} 👋</div>
+                  <div className="greeting-sub">Welcome back</div>
+                </div>
+              </div>
+            )}
+
+            <nav className="nav-menu">
+              <li className={`nav-item ${view === 'home' ? 'active' : ''}`}>
+                <button onClick={() => setView('home')}><span className="nav-icon">🏠</span> Mentor Home</button>
+              </li>
+              <li className={`nav-item ${view === 'academy' ? 'active' : ''}`}>
+                <button onClick={() => setView('academy')}><span className="nav-icon">📚</span> Learn Academy</button>
+              </li>
+              <li className={`nav-item ${view === 'advisor' ? 'active' : ''}`}>
+                <button onClick={() => setView('advisor')}><span className="nav-icon">🤖</span> Wealth Advisor</button>
+              </li>
+              <li className={`nav-item ${view === 'simulator' ? 'active' : ''}`}>
+                <button onClick={() => setView('simulator')}><span className="nav-icon">📈</span> Wealth Simulator</button>
+              </li>
+            </nav>
+
+            <div className="sidebar-footer">
+              <div className="sidebar-iq-box">
+                <div className="iq-title-flex">
+                  <span className="iq-title">Financial IQ</span>
+                  <span className="iq-score-value">{financialIQ}</span>
+                </div>
+                <div className="iq-progress-bg">
+                  <div className="iq-progress-bar" style={{ width: `${(financialIQ / 1000) * 100}%` }}></div>
+                </div>
+                <div className="iq-level-label">
+                  {financialIQ < 400 ? 'Beginner Rank' : financialIQ < 700 ? 'Basics Scholar' : financialIQ < 900 ? 'Intermediate Investor' : 'Wealth Commander'}
+                </div>
+              </div>
+            </div>
+          </aside>
+
+          <main className="main-content">
+            <header className="top-bar">
+              <div className="page-title-box">
+                <h2>{view === 'home' ? 'Welcome to FinPilot AI' : view === 'academy' ? 'Investment Academy' : view === 'advisor' ? 'AI Wealth Advisor' : 'Wealth Simulator'}</h2>
+              </div>
+              {!token ? (
+                <div style={{ display: 'flex', gap: '0.75rem' }}>
+                  <button className="btn btn-secondary" style={{ padding: '0.5rem 1rem', fontSize: '0.85rem' }} onClick={() => { setAuthMode('signin'); setShowAuthModal(true); }}>
+                    Sign In
+                  </button>
+                  <button className="btn btn-primary" style={{ padding: '0.5rem 1rem', fontSize: '0.85rem', color: '#070a13' }} onClick={() => { setAuthMode('signup'); setShowAuthModal(true); }}>
+                    Sign Up
+                  </button>
+                </div>
+              ) : (
+                <div className="user-profile-badge" style={{ gap: '1.25rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <div className="user-avatar">{user?.name ? user.name.charAt(0).toUpperCase() : 'U'}</div>
+                    <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>{user?.name || 'User'}</span>
+                  </div>
+                  <button onClick={handleLogout} style={{ background: 'transparent', border: 'none', cursor: 'pointer' }} title="Log Out">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="red" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                      <polyline points="16 17 21 12 16 7"></polyline>
+                      <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                  </button>
+                </div>
+              )}
+            </header>
+
+            {/* View Panels */}
+            
+            {/* 1. HOME VIEW */}
+            {view === 'home' && (
+              <div className="view-panel active">
+                <div className="hero-section">
+                  <div>
+                    <span className="hero-tagline">Before Investing Money, Understand Money</span>
+                    <h2 className="hero-title">Your Personal AI<br/>Wealth Mentor</h2>
+                    <p className="hero-description">
+                      Today, millions want to build wealth but struggle with complex terms and recommendations.
+                      FinPilot AI teaches you first, maps your life goals, and coordinates multiple AI agents to build risk-managed strategies.
+                    </p>
+                    <div className="hero-ctas">
+                      <button className="btn btn-primary" onClick={() => setView('academy')}>Start Learning 📚</button>
+                      <button className="btn btn-secondary" onClick={() => setView('advisor')}>Start Wealth Journey 🚀</button>
+                    </div>
+                  </div>
+                  <div className="hero-visual">
+                    <div className="floating-cards-container">
+                      <div className="floating-card floating-card-1">
+                        <div className="hero-metric-label">Nifty 50</div>
+                        <div className="hero-metric-value" style={{color:'var(--accent-green)'}}>+1.83%</div>
+                        <div className="hero-metric-sub">22,419 pts today</div>
+                        <div className="hero-mini-sparkline">📈 Strong structural momentum</div>
+                      </div>
+                      <div className="floating-card floating-card-2">
+                        <div className="hero-metric-label">Your Portfolio</div>
+                        <div className="hero-metric-value" style={{color:'var(--accent-gold)'}}>₹{Math.round(portfolioTotal || 165000).toLocaleString()}</div>
+                        <div className="hero-metric-sub">+12.4% this year</div>
+                        <div className="hero-mini-sparkline">🏆 On track for goal</div>
+                      </div>
+                      <div className="floating-card floating-card-3">
+                        <div className="hero-metric-label">Financial IQ</div>
+                        <div className="hero-metric-value" style={{color:'var(--accent-indigo)'}}>{financialIQ}<span style={{fontSize:'0.9rem', fontWeight:500}}> /1000</span></div>
+                        <div className="iq-progress-bg" style={{marginTop:'0.5rem', marginBottom:'0.4rem'}}>
+                          <div className="iq-progress-bar" style={{width:`${(financialIQ/1000)*100}%`}}></div>
+                        </div>
+                        <div className="hero-mini-sparkline">📚 {completedLessons.length}/7 lessons done</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="landing-grid">
+                  <div className="glass-card glow-indigo landing-feature-card">
+                    <div className="landing-card-icon">📚</div>
+                    <h3 className="landing-card-title">Investment Academy</h3>
+                    <p className="landing-card-description">Personalized learning roadmap from Beginner to Intermediate. An interactive AI tutor answers your finance questions in real-time with examples, comparisons, and ELI15 explanations.</p>
+                    <button className="btn btn-secondary" style={{marginTop:'1.5rem', fontSize:'0.85rem', padding:'0.65rem 1.25rem', alignSelf:'flex-start'}} onClick={() => setView('academy')}>Start Learning →</button>
+                  </div>
+                  <div className="glass-card glow-gold landing-feature-card">
+                    <div className="landing-card-icon">🤖</div>
+                    <h3 className="landing-card-title">AI Wealth Advisor</h3>
+                    <p className="landing-card-description">A multi-agent AI system analyzes live markets, screens funds, models risk, and builds a personalized portfolio strategy optimized for your specific financial goal and timeline.</p>
+                    <button className="btn btn-secondary" style={{marginTop:'1.5rem', fontSize:'0.85rem', padding:'0.65rem 1.25rem', alignSelf:'flex-start'}} onClick={() => setView('advisor')}>Build Strategy →</button>
+                  </div>
+                  <div className="glass-card glow-green landing-feature-card">
+                    <div className="landing-card-icon">📈</div>
+                    <h3 className="landing-card-title">Wealth Simulator</h3>
+                    <p className="landing-card-description">Model SIP and lumpsum investments with real compound growth and inflation projections across 40-year horizons. Reverse-solve any wealth target into monthly SIP amounts.</p>
+                    <button className="btn btn-secondary" style={{marginTop:'1.5rem', fontSize:'0.85rem', padding:'0.65rem 1.25rem', alignSelf:'flex-start'}} onClick={() => setView('simulator')}>Run Simulation →</button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* 2. ACADEMY VIEW */}
+            {view === 'academy' && (
+              <div className="view-panel active">
+                {!knowledgeLevel ? (
+                  <div className="academy-start-box glass-card">
+                    <h2>Select Your Current Investment Knowledge</h2>
+                    <div className="knowledge-selectors">
+                      <div className={`selector-card ${knowledgeLevel === 'beginner' ? 'selected' : ''}`} onClick={() => handleSelectKnowledge('beginner')}>
+                        <span className="selector-emoji">🌱</span>
+                        <h4 className="selector-title">Complete Beginner</h4>
+                      </div>
+                      <div className={`selector-card ${knowledgeLevel === 'basics' ? 'selected' : ''}`} onClick={() => handleSelectKnowledge('basics')}>
+                        <span className="selector-emoji">🌿</span>
+                        <h4 className="selector-title">Know Basics</h4>
+                      </div>
+                      <div className={`selector-card ${knowledgeLevel === 'intermediate' ? 'selected' : ''}`} onClick={() => handleSelectKnowledge('intermediate')}>
+                        <span className="selector-emoji">🌳</span>
+                        <h4 className="selector-title">Intermediate</h4>
+                      </div>
+                    </div>
+                    <button className="btn btn-primary" style={{ margin: '0 auto' }} onClick={() => setKnowledgeLevel(knowledgeLevel || 'beginner')}>Create My Academy Path</button>
+                  </div>
+                ) : (
+                  <div className="academy-layout">
+                    <div className="academy-roadmap-pane">
+                      <div className="roadmap-header">
+                        <div>
+                          <h3>Personalized Academy Roadmap</h3>
+                          <div className="lesson-progress-bar-wrap">
+                            <div className="lesson-progress-bar-fill" style={{width: `${(completedLessons.length / 7) * 100}%`}}></div>
+                          </div>
+                          <div className="lesson-progress-meta">{completedLessons.length} / 7 lessons completed</div>
+                        </div>
+                        <button className="btn btn-secondary" style={{flexShrink:0}} onClick={() => setKnowledgeLevel(null)}>Change Level</button>
+                      </div>
+                      <div className="roadmap-timeline">
+                        {[...ACADEMY_LESSONS.beginner, ...ACADEMY_LESSONS.basics, ...ACADEMY_LESSONS.intermediate].map((lesson, idx) => {
+                          const isCompleted = completedLessons.includes(lesson.id);
+                          const isActive = idx === 0 || completedLessons.includes(ACADEMY_LESSONS.beginner[idx - 1]?.id || '');
+                          const status = isCompleted ? 'completed' : isActive ? 'active' : 'locked';
+
+                          return (
+                            <div key={lesson.id} className={`roadmap-node ${status}`} onClick={() => status !== 'locked' && handleRoadmapLessonSelect(lesson)}>
+                              <div className="node-title-row">
+                                <span className="node-title">{lesson.title}</span>
+                                <span className={`node-status-badge status-${status}`}>{status}</span>
+                              </div>
+                              <p className="node-desc">{lesson.desc}</p>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    <div className="academy-tutor-pane">
+                      <div className="glass-card tutor-card">
+                        <div className="tutor-header">
+                          <div className="tutor-avatar">🤖</div>
+                          <div>
+                            <h4>AI Financial Tutor</h4>
+                          </div>
+                        </div>
+                        <div className="tutor-chat-history">
+                          {chatHistory.map((h, i) => (
+                            <div key={i} className={`chat-bubble ${h.sender}`} dangerouslySetInnerHTML={{ __html: h.text }}></div>
+                          ))}
+                        </div>
+                        
+                        {activeLesson && (
+                          <div className="tutor-quick-prompts">
+                            <button className="quick-prompt-btn" onClick={() => sendChatPreset('Explain this like I am 15 years old.')}>Explain like 15</button>
+                            <button className="quick-prompt-btn" onClick={() => sendChatPreset('Give me a real-world example.')}>Real-world Example</button>
+                            <button className="quick-prompt-btn" onClick={() => sendChatPreset('Compare SIP and lumpsum.')}>SIP vs Lumpsum</button>
+                            <button className="quick-prompt-btn" style={{ background: '#10b981', color: '#000' }} onClick={() => handleMarkLessonComplete(activeLesson.id)}>✓ Complete Module</button>
+                          </div>
+                        )}
+
+                        <div className="tutor-chat-input-row">
+                          <input type="text" className="tutor-input" placeholder="Ask a financial question..." value={chatInput} onChange={e => setChatInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && sendChatCustomQuery()} />
+                          <button className="btn-icon" onClick={sendChatCustomQuery}>➔</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* 3. ADVISOR VIEW */}
+            {view === 'advisor' && (
+              <div className="view-panel active">
+                
+                {advisorScreen === 'form' && (
+                  <div className="glass-card advisor-setup-grid">
+                    <div className="advisor-setup-header">
+                      <h2>Investor Profiler & Advisor Setup</h2>
+                    </div>
+                    <div className="form-group">
+                      <label>Age</label>
+                      <input type="number" className="form-control" value={advAge} onChange={e => setAdvAge(e.target.value)} />
+                    </div>
+                    <div className="form-group">
+                      <label>Goal</label>
+                      <select className="form-control" value={advGoal} onChange={e => setAdvGoal(e.target.value)}>
+                        <option value="house">Buy a House (10 years)</option>
+                        <option value="retirement">Retirement Reserve (25 years)</option>
+                      </select>
+                    </div>
+                    <div className="form-group">
+                      <label>Monthly Income</label>
+                      <input type="number" className="form-control" value={advIncome} onChange={e => setAdvIncome(e.target.value)} />
+                    </div>
+                    <div className="form-group">
+                      <label>Monthly Investment Capacity</label>
+                      <input type="number" className="form-control" value={advCapacity} onChange={e => setAdvCapacity(e.target.value)} />
+                    </div>
+                    <div className="form-group">
+                      <label>Liquid Savings</label>
+                      <input type="number" className="form-control" value={advSavings} onChange={e => setAdvSavings(e.target.value)} />
+                    </div>
+                    <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                      <label>Duration: {advDuration} Years</label>
+                      <input type="range" className="range-slider" min="1" max="40" value={advDuration} onChange={e => setAdvDuration(e.target.value)} />
+                    </div>
+                    <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                      <label>Risk Profile</label>
+                      <div className="btn-group-toggle">
+                        <button className={`btn-toggle ${advRisk === 'conservative' ? 'active' : ''}`} onClick={() => setAdvRisk('conservative')}>Conservative</button>
+                        <button className={`btn-toggle ${advRisk === 'moderate' ? 'active' : ''}`} onClick={() => setAdvRisk('moderate')}>Moderate</button>
+                        <button className={`btn-toggle ${advRisk === 'aggressive' ? 'active' : ''}`} onClick={() => setAdvRisk('aggressive')}>Aggressive</button>
+                      </div>
+                    </div>
+                    <button className="btn btn-primary" style={{ gridColumn: '1 / -1', margin: '1rem auto 0' }} onClick={handleRunAdvisorAgents}>Build Strategy via AI Agents 🤖</button>
+                  </div>
+                )}
+
+                {advisorScreen === 'terminal' && (
+                  <div className="glass-card agent-workspace active">
+                    <h3 style={{ textAlign: 'center', marginBottom: '1.5rem' }}>Multi-Agent Synthesis Engine Running</h3>
+                    <div className="agent-cards-grid">
+                      <div className={`agent-status-card ${activeAgents.market}`}>
+                        <div className="agent-name">Market Analyst</div>
+                        <div className="agent-status-text">{activeAgents.market}</div>
+                      </div>
+                      <div className={`agent-status-card ${activeAgents.fund}`}>
+                        <div className="agent-name">Fund Agent</div>
+                        <div className="agent-status-text">{activeAgents.fund}</div>
+                      </div>
+                      <div className={`agent-status-card ${activeAgents.risk}`}>
+                        <div className="agent-name">Risk Agent</div>
+                        <div className="agent-status-text">{activeAgents.risk}</div>
+                      </div>
+                      <div className={`agent-status-card ${activeAgents.builder}`}>
+                        <div className="agent-name">Portfolio Builder</div>
+                        <div className="agent-status-text">{activeAgents.builder}</div>
+                      </div>
+                    </div>
+                    <div className="terminal-box">
+                      {agentLogs.map((log, idx) => (
+                        <div key={idx} className="terminal-line">
+                          <span className="timestamp">[{log.time}]</span>
+                          <span className="agent-tag">[{log.tag}]</span>
+                          <span className={log.style}>{log.text}</span>
+                        </div>
+                      ))}
+                      {agentLogs.length > 0 && agentLogs.length < 10 && (
+                        <div className="terminal-line">
+                          <span className="timestamp">[running]</span>
+                          <span className="agent-tag">[ENGINE]</span>
+                          <span className="terminal-cursor"></span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {advisorScreen === 'recommendation' && (
+                  <div className="recommendation-panel active">
+                    <div className="glass-card flex-center" style={{ flexDirection: 'column' }}>
+                      <h3>Allocations ({advRisk.toUpperCase()})</h3>
+                      <div className="allocation-breakdown" style={{ width: '100%', marginTop: '2rem' }}>
+                        {getActiveAllocationBreakdown().map((alloc, idx) => (
+                          <div key={idx} className="allocation-pill">
+                            <span className="pill-color-indicator" style={{ backgroundColor: alloc.color }}></span>
+                            <span className="pill-name">{alloc.name}</span>
+                            <span className="pill-weight">{alloc.weight}%</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="glass-card" style={{ display: 'flex', flexDirection: 'column' }}>
+                      <div className="explainable-header-tabs">
+                        <button className={`explain-tab-btn ${explainTab === 'why' ? 'active' : ''}`} onClick={() => setExplainTab('why')}>Why This?</button>
+                        <button className={`explain-tab-btn ${explainTab === 'risks' ? 'active' : ''}`} onClick={() => setExplainTab('risks')}>Risks</button>
+                      </div>
+
+                      <div className="explain-content-pane active">
+                        <ul className="explain-list">
+                          {explainTab === 'why' ? (
+                            <>
+                              <li>Optimizes risk returns to maximize compounding over {advDuration} years.</li>
+                              <li>Matches the parsed goal allocation model.</li>
+                            </>
+                          ) : (
+                            <>
+                              <li>Recession values might decline capital yields temporarily.</li>
+                              <li>Debt exposure risks changing standard inflation margins.</li>
+                            </>
+                          )}
+                        </ul>
+                      </div>
+
+                      <button className="btn btn-primary" style={{ marginTop: 'auto' }} onClick={handleConfirmPortfolio}>Confirm & Active Monitor</button>
+                    </div>
+                  </div>
+                )}
+
+                {advisorScreen === 'portfolio' && (
+                  <div className="portfolio-dashboard active">
+                    <div className="glass-card">
+                      <h3>Simulated Portfolio Dashboard</h3>
+                      <div className="summary-stats-grid mt-4">
+                        <div className="stat-card">
+                          <div className="stat-label">Total value</div>
+                          <div className="stat-val">₹{Math.round(portfolioTotal).toLocaleString()}</div>
+                        </div>
+                        <div className="stat-card">
+                          <div className="stat-label">Total variance</div>
+                          <div className={`stat-val ${portfolioVarianceClass}`}>{portfolioVariance}</div>
+                        </div>
+                      </div>
+
+                      <div className="allocation-breakdown mt-4">
+                        {(() => {
+                          const barColors = ['#10b981','#f59e0b','#6366f1','#ef4444'];
+                          return portfolioHoldings.map((h, i) => (
+                            <div key={i} className="allocation-pill">
+                              <span className="pill-color-indicator" style={{backgroundColor: barColors[i % barColors.length]}}></span>
+                              <div style={{flexGrow:1}}>
+                                <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'0.3rem'}}>
+                                  <span className="pill-name">{h.asset_class}</span>
+                                  <span className="pill-weight">{h.weight}%</span>
+                                </div>
+                                <div className="alloc-bar-bg">
+                                  <div className="alloc-bar-fill" style={{width:`${h.weight}%`, backgroundColor: barColors[i % barColors.length]}}></div>
+                                </div>
+                                <div className="alloc-value-label">₹{Math.round(h.current_value).toLocaleString()}</div>
+                              </div>
+                            </div>
+                          ));
+                        })()}
+                      </div>
+                    </div>
+
+                    <div className="glass-card">
+                      <h3>Guardian Feed</h3>
+                      <div className="mt-4">
+                        {(Array.isArray(guardianAlerts) ? guardianAlerts : []).map(a => (
+                          <div key={a.id} className={`alert-item ${a.type}`}>
+                            <div className="alert-text-box">
+                              <h5>{a.title}</h5>
+                              <p>{a.desc}</p>
+                              {a.type === 'warning' && (
+                                <button className="btn btn-secondary alert-action-btn" onClick={handleRebalanceClick}>Rebalance Assets</button>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      <div style={{ marginTop: 'auto', display: 'flex', gap: '1rem' }}>
+                        <button className="btn btn-secondary" style={{ flexGrow: 1 }} onClick={handleSimulateMarketShift}>Simulate Shift</button>
+                        <button className="btn btn-primary" onClick={() => setAdvisorScreen('form')}>Reset Form</button>
+                      </div>
+                    </div>
+
+                  </div>
+                )}
+
+              </div>
+            )}
+
+            {/* 4. SIMULATOR VIEW */}
+            {view === 'simulator' && (
+              <div className="view-panel active">
+                <div className="simulator-layout">
+                  <div className="glass-card calculator-card">
+                    <div className="btn-group-toggle">
+                      <button className={`btn-toggle ${simMode === 'sip' ? 'active' : ''}`} onClick={() => setSimMode('sip')}>SIP</button>
+                      <button className={`btn-toggle ${simMode === 'lumpsum' ? 'active' : ''}`} onClick={() => setSimMode('lumpsum')}>Lumpsum</button>
+                    </div>
+                    <div className="form-group mt-4">
+                      <label>{simMode === 'sip' ? 'Monthly Investment' : 'One-time Investment'}: ₹{parseInt(simAmount).toLocaleString()}</label>
+                      <input type="range" className="range-slider" min="500" max="100000" step="500" value={simAmount} onChange={e => setSimAmount(e.target.value)} />
+                    </div>
+                    <div className="form-group">
+                      <label>Return rate: {simRate}%</label>
+                      <input type="range" className="range-slider" min="3" max="30" step="0.5" value={simRate} onChange={e => setSimRate(e.target.value)} />
+                    </div>
+                    <div className="form-group">
+                      <label>Duration: {simYears} Years</label>
+                      <input type="range" className="range-slider" min="1" max="40" value={simYears} onChange={e => setSimYears(e.target.value)} />
+                    </div>
+                    <div className="form-group">
+                      <label>Inflation: {simInflation}%</label>
+                      <input type="range" className="range-slider" min="0" max="15" value={simInflation} onChange={e => setSimInflation(e.target.value)} />
+                    </div>
+                    <hr style={{ borderColor: 'var(--border-color)', margin: '1rem 0' }} />
+                    
+                    <div>
+                      <h4 style={{ color: 'var(--accent-gold)' }}>Goal Target solver</h4>
+                      <div className="form-group mt-2">
+                        <label>Target Wealth</label>
+                        <input type="number" className="form-control" value={goalTarget} onChange={e => setGoalTarget(e.target.value)} />
+                      </div>
+                      <button className="btn btn-secondary" style={{ width: '100%' }} onClick={handleSolveSIPGoal}>Solve Goal</button>
+                      {solvedResult && (
+                        <div className="mt-4 text-center" style={{ color: 'var(--accent-green)', fontWeight: 'bold' }}>
+                          Target solved: {solvedResult}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="glass-card simulation-chart-box">
+                    <h3>Simulation Projections</h3>
+                    <div className="canvas-container mt-4" style={{ minHeight: '260px' }}>
+                      <canvas ref={canvasRef} width="500" height="260" style={{ width: '100%', height: '100%' }}></canvas>
+                    </div>
+                    {(() => {
+                      const months = parseInt(simYears) * 12;
+                      const mRate = (parseFloat(simRate) / 100) / 12;
+                      const amt = parseFloat(simAmount);
+                      const rate = parseFloat(simRate) / 100;
+                      const totalInvested = simMode === 'sip' ? amt * months : amt;
+                      const finalNominal = simMode === 'sip'
+                        ? (mRate > 0 ? amt * ((Math.pow(1 + mRate, months) - 1) / mRate) * (1 + mRate) : totalInvested)
+                        : amt * Math.pow(1 + rate, parseInt(simYears));
+                      const finalReal = finalNominal / Math.pow(1 + parseFloat(simInflation)/100, parseInt(simYears));
+                      const totalGain = finalNominal - totalInvested;
+                      const gainPct = totalInvested > 0 ? ((totalGain / totalInvested) * 100).toFixed(1) : '0.0';
+                      const fmt = v => {
+                        if (v >= 10000000) return `₹${(v/10000000).toFixed(2)}Cr`;
+                        if (v >= 100000) return `₹${(v/100000).toFixed(1)}L`;
+                        return `₹${Math.round(v).toLocaleString()}`;
+                      };
+                      return (
+                        <div className="sim-stats-grid mt-4">
+                          <div className="sim-stat-card">
+                            <div className="sim-stat-label">Final Value</div>
+                            <div className="sim-stat-val text-green">{fmt(finalNominal)}</div>
+                          </div>
+                          <div className="sim-stat-card">
+                            <div className="sim-stat-label">Total Invested</div>
+                            <div className="sim-stat-val">{fmt(totalInvested)}</div>
+                          </div>
+                          <div className="sim-stat-card">
+                            <div className="sim-stat-label">Total Gain</div>
+                            <div className="sim-stat-val" style={{color:'var(--accent-gold)'}}>+{gainPct}%</div>
+                          </div>
+                          <div className="sim-stat-card">
+                            <div className="sim-stat-label">Inflation-Adj.</div>
+                            <div className="sim-stat-val" style={{color:'var(--accent-indigo)'}}>{fmt(finalReal)}</div>
+                          </div>
+                        </div>
+                      );
+                    })()}
+                    <div className="chart-legend">
+                      <span className="legend-item"><span className="legend-dot" style={{background:'#10b981'}}></span>Nominal Growth</span>
+                      <span className="legend-item"><span className="legend-dot" style={{background:'#6366f1'}}></span>Inflation-Adjusted</span>
+                      <span className="legend-item"><span className="legend-dot" style={{background:'#64748b'}}></span>Amount Invested</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+          </main>
+
+          {/* Conditional Auth Modal Overlay */}
+          {showAuthModal && (
+            <div className="auth-overlay" style={{ display: 'flex' }}>
+              <div className="auth-box glass-card glow-indigo" style={{ position: 'relative' }}>
+                {/* Close Button */}
+                <button 
+                  onClick={() => setShowAuthModal(false)}
+                  style={{
+                    position: 'absolute',
+                    top: '1.25rem',
+                    right: '1.25rem',
+                    background: 'transparent',
+                    border: 'none',
+                    color: 'var(--text-secondary)',
+                    fontSize: '1.5rem',
+                    cursor: 'pointer',
+                    lineHeight: '1',
+                    padding: '0',
+                    transition: 'color 0.2s',
+                    zIndex: 10
+                  }}
+                  onMouseOver={(e) => e.target.style.color = '#ef4444'}
+                  onMouseOut={(e) => e.target.style.color = 'var(--text-secondary)'}
+                >
+                  &times;
+                </button>
+
+                <div className="logo-container" style={{ justifyContent: 'center', marginBottom: '1.5rem' }}>
+                  <div className="logo-icon">Φ</div>
+                  <div>
+                    <h1 className="logo-text">FinPilot AI</h1>
+                    <div className="logo-subtitle">AI Wealth Mentor</div>
+                  </div>
+                </div>
+                
+                <div className="auth-tabs">
+                  <button className={`auth-tab ${authMode === 'signin' ? 'active' : ''}`} onClick={() => setAuthMode('signin')}>Sign In</button>
+                  <button className={`auth-tab ${authMode === 'signup' ? 'active' : ''}`} onClick={() => setAuthMode('signup')}>Sign Up</button>
+                </div>
+
+                {authMode === 'signin' ? (
+                  <form onSubmit={handleSigninSubmit} className="auth-form active">
+                    <div className="form-group">
+                      <label>Email Address</label>
+                      <input type="email" className="form-control" placeholder="name@domain.com" value={authEmail} onChange={e => setAuthEmail(e.target.value)} required />
+                    </div>
+                    <div className="form-group">
+                      <label>Password</label>
+                      <input type="password" className="form-control" placeholder="••••••••" value={authPassword} onChange={e => setAuthPassword(e.target.value)} required />
+                    </div>
+                    {authError && <div className="auth-error-msg">{authError}</div>}
+                    <button type="submit" className="btn btn-primary" style={{ width: '100%', justifyContent: 'center', marginTop: '1rem' }}>
+                      <span>Sign In</span> <span>🗝️</span>
+                    </button>
+                  </form>
+                ) : (
+                  <form onSubmit={handleSignupSubmit} className="auth-form active">
+                    <div className="form-group">
+                      <label>Full Name</label>
+                      <input type="text" className="form-control" placeholder="Sai Kumar" value={authName} onChange={e => setAuthName(e.target.value)} required />
+                    </div>
+                    <div className="form-group">
+                      <label>Email Address</label>
+                      <input type="email" className="form-control" placeholder="name@domain.com" value={authEmail} onChange={e => setAuthEmail(e.target.value)} required />
+                    </div>
+                    <div className="form-group">
+                      <label>Password</label>
+                      <input type="password" className="form-control" placeholder="••••••••" value={authPassword} onChange={e => setAuthPassword(e.target.value)} required />
+                    </div>
+                    <div className="form-group">
+                      <label>Confirm Password</label>
+                      <input type="password" className="form-control" placeholder="••••••••" value={authConfirm} onChange={e => setAuthConfirm(e.target.value)} required />
+                    </div>
+                    {authError && <div className="auth-error-msg">{authError}</div>}
+                    <button type="submit" className="btn btn-primary" style={{ width: '100%', justifyContent: 'center', marginTop: '1rem' }}>
+                      <span>Create Account</span> <span>🚀</span>
+                    </button>
+                  </form>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    const rootElement = document.getElementById('root');
+    const root = ReactDOM.createRoot(rootElement);
+    root.render(<App />);
+  </script>
+
+</body>
+</html>
